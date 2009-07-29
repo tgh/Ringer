@@ -16,6 +16,7 @@
  *   for suggesting LADSPA plugins as a project.
  */
 
+
 //----------------
 //-- INCLUSIONS --
 //----------------
@@ -23,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ladspa.h"
+
 
 //-----------------------
 //-- DEFINED CONSTANTS --
@@ -48,6 +50,8 @@
 #define MAX_COPIES 200
 // minimum number of samples to copy
 #define MIN_COPIES 5
+
+
 //------------
 //-- MACROS --
 //------------
@@ -57,11 +61,13 @@
  */
 #define LIMIT_BETWEEN_5_AND_200(x) (((x) < 5) ? 5 : (((x) > 200) ? 200 : (x)))
 
+
 //-------------------------
 //-- FUNCTION PROTOTYPES --
 //-------------------------
 
 // none
+
 
 //--------------------------------
 //-- STRUCT FOR PORT CONNECTION --
@@ -78,6 +84,7 @@ typedef struct {
 	LADSPA_Data * Input;
 	LADSPA_Data * Output;
 } Ringer;
+
 
 //---------------
 //-- FUNCTIONS --
