@@ -49,8 +49,7 @@
  * This macro ensures the value used for the number of sample copies made in
  * the output buffer is between 5 and 500.
  */
-#define LIMIT_BETWEEN_5_AND_500(x)
-( ( (x) < 5 ) ? 5 : ( ( (x) > 500 ) ? 500 : (x) ) )
+#define LIMIT_BETWEEN_5_AND_500(x) (((x) < 5) ? 5 : (((x) > 500) ? 500 : (x)))
 
 //-------------------------
 //-- FUNCTION PROTOTYPES --
@@ -157,7 +156,7 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count)
 	unsigned long out_index = 0;
 	
 	// set the number of copies to be made
-	const int SAMPLE_COPY_COUNT = LIMIT_BETWEEN_5_AND_500((int)ringer->copy_count);
+	const int SAMPLE_COPY_COUNT = LIMIT_BETWEEN_5_AND_500((int)*(ringer->copy_count));
 	
 	while (in_index < sample_count)
 	{
@@ -265,21 +264,29 @@ void _init()
 		temp_descriptor_array = (LADSPA_PortDescriptor *) calloc(PORT_COUNT, sizeof(LADSPA_PortDescriptor));
 		
 		/*
-		* set the instance LADSPA_PortDescriptor array (PortDescriptors) pointer to
-		* the location temp_descriptor_array is pointing at.
-		*/
+		 * set the instance LADSPA_PortDescriptor array (PortDescriptors) pointer to
+		 * the location temp_descriptor_array is pointing at.
+		 */
 		Ringer_descriptor->PortDescriptors = (const LADSPA_PortDescriptor *) temp_descriptor_array;
 		
 		/*
 		 * set the port properties by ORing specific bit masks defined in ladspa.h.
 		 *
-		 * this first one gives the first port the properties that tell the host that
+		 * this one gives the control port that defines the number of sample
+		 * copies the properties that tell the host that this port takes input
+		 * (from the user) and is a control port (a port that is controlled by
+		 * the user).
+		 */
+		temp_descriptor_array[RINGER_COPY_COUNT] = LADSPA_PORT_INPUT | LADSPA_PORT_CONTROL;
+
+		/*
+		 * this one gives the input port the properties that tell the host that
 		 * this port takes input and is an audio port (not a control port).
 		 */
 		temp_descriptor_array[RINGER_INPUT] = LADSPA_PORT_INPUT | LADSPA_PORT_AUDIO;
 		
 		/*
-		 * this gives the second port the properties that tell the host that this port is
+		 * this gives the output port the properties that tell the host that this port is
 		 * an output port and that it is an audio port (I don't see any situation where
 		 * one might be an output port, but not an audio port...).
 		 */
