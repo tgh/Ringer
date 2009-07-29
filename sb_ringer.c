@@ -5,6 +5,12 @@
  * Please see the file COPYING in the source
  * distribution of this software for license terms.
  *
+ * This LADSPA plugin takes a sample, makes a number of copies of it to the
+ * output buffer, skips that number of samples in the input buffer, and
+ * repeats the process.  This creates an effect similar to a ring modulator.
+ * The number of copies to be made is controlled by the user.  The range
+ * is 5 to 500 samples.
+ *
  * Thanks to:
  * - Bart Massey of Portland State University (http://web.cecs.pdx.edu/~bart/)
  *   for suggesting LADSPA plugins as a project.
@@ -155,27 +161,46 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count)
 	unsigned long in_index = 0;
 	unsigned long out_index = 0;
 	
-	// set the number of copies to be made
+	// set the number of copies to be made using the defined macro
 	const int SAMPLE_COPY_COUNT = LIMIT_BETWEEN_5_AND_500((int)*(ringer->copy_count));
 	
+	// go through the input buffer and make the necessary copies into the output buffer
 	while (in_index < sample_count)
 	{
+		// make the first copy (there will always be at least 2 samples due to
+		// the first condition of this function)
 		output[out_index++] = input[in_index];
 		
+		/*
+		 * Copy the current sample in the input buffer to the rest of the output
+		 * buffer if the input buffer index is anywhere between the set number of
+		 * copies being made until the end of the input buffer.
+		 *
+		 * NOTE: the ...0xFFFFFFFFFFFFFFFF... condition is for when the sample
+		 * count is less than the set number of copies being made.  If this were
+		 * not here, an underflow will occur since sample_count is an unsigned
+		 * integer, making it a huge positive number, which of course, in_index
+		 * will never be greater than or equal to.
+		 */
 		if (in_index >= sample_count - (SAMPLE_COPY_COUNT - 1)
 			|| (sample_count - (SAMPLE_COPY_COUNT - 1)) >= 0xFFFFFFFFFFFFFFFF - (SAMPLE_COPY_COUNT - 1))
 		{
 			while (out_index < sample_count)
 				output[out_index++] = input[in_index];
 			
+			// get out of the loop since the output buffer is now full
 			break;
 		}
 		
+		// since in_index is not between the number of copies to the end of the
+		// input buffer at this point, make the necessary copies to the output buffer
 		while (out_index < in_index + SAMPLE_COPY_COUNT)
 			output[out_index++] = input[in_index];
 		
+		// jump ahead in the input buffer by the number of set copies to be made
 		in_index += SAMPLE_COPY_COUNT;
 		
+		// get out of the loop if in_index is now beyond the end of the input buffer
 		if (in_index >= sample_count)
 			break;
 	}
