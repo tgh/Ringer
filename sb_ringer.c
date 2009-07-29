@@ -273,7 +273,7 @@ void _init()
 		Ringer_descriptor->Name = strdup("Ringer");
 		
 		// assign the author of the plugin
-		Ringer_descriptor->Maker = strdup("Tyler Hayes");
+		Ringer_descriptor->Maker = strdup("Tyler Hayes (tgh@pdx.edu)");
 		
 		/*
 		 * assign the copyright info of the plugin (NOTE: use "None" for no copyright
@@ -281,10 +281,7 @@ void _init()
 		 */
 		Ringer_descriptor->Copyright = strdup("GPL");
 		
-		/*
-		 * assign the number of ports for the plugin.  since there are no control
-		 * features for Ringer, there are only 2 ports: audio input and output.
-		 */
+		// assign the number of ports for the plugin.
 		Ringer_descriptor->PortCount = PORT_COUNT;
 		
 		LADSPA_PortDescriptor * temp_descriptor_array;	// used for allocating and initailizing a
