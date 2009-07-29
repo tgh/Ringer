@@ -9,7 +9,7 @@
  * output buffer, skips that number of samples in the input buffer, and
  * repeats the process.  This creates an effect similar to a ring modulator.
  * The number of copies to be made is controlled by the user.  The range
- * is 5 to 500 samples.
+ * is 5 to 200 samples.
  *
  * Thanks to:
  * - Bart Massey of Portland State University (http://web.cecs.pdx.edu/~bart/)
@@ -45,7 +45,7 @@
 // number of ports involved
 #define PORT_COUNT 3
 // maximum number of samples to copy
-#define MAX_COPIES 500
+#define MAX_COPIES 200
 // minimum number of samples to copy
 #define MIN_COPIES 5
 //------------
@@ -53,9 +53,9 @@
 //------------
 /*
  * This macro ensures the value used for the number of sample copies made in
- * the output buffer is between 5 and 500.
+ * the output buffer is between 5 and 200.
  */
-#define LIMIT_BETWEEN_5_AND_500(x) (((x) < 5) ? 5 : (((x) > 500) ? 500 : (x)))
+#define LIMIT_BETWEEN_5_AND_200(x) (((x) < 5) ? 5 : (((x) > 200) ? 200 : (x)))
 
 //-------------------------
 //-- FUNCTION PROTOTYPES --
@@ -69,7 +69,7 @@
 
 typedef struct {
 	// the number of copies to be placed into the output buffer.
-	// NOTE: the number has to be an integer between 5 and 500, but this variable
+	// NOTE: the number has to be an integer between 5 and 200, but this variable
 	// is a pointer to a LADSPA_Data (a float), because the connection to
 	// data_location in the connect_port() function cannot be made unless
 	// they are of the same type.
@@ -162,7 +162,7 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count)
 	unsigned long out_index = 0;
 	
 	// set the number of copies to be made using the defined macro
-	const int SAMPLE_COPY_COUNT = LIMIT_BETWEEN_5_AND_500((int)*(ringer->copy_count));
+	const int SAMPLE_COPY_COUNT = LIMIT_BETWEEN_5_AND_200((int)*(ringer->copy_count));
 	
 	// go through the input buffer and make the necessary copies into the output buffer
 	while (in_index < sample_count)
@@ -365,7 +365,7 @@ void _init()
 		 * set the port hint descriptors (which are ints).
 		 * For the control port, the BOUNDED masks from
 		 * ladspa.h tell the host that this control has limits (this one is 5 and
-		 * 500 as defined in the Macro at the top).
+		 * 200 as defined in the Macro at the top).
 		 * The DEFAULT_LOW mask tells the host to set the control value upon start
 		 * (like for a gui) to a low value between the bounds.
 		 * The INTEGER mask tells the host that the control values should be in
