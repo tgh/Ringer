@@ -1,6 +1,8 @@
 RINGER (part of the StudioBlood LADSPA plugin package, hence the sb_ prefix)
+COPYRIGHT (c)2009. Tyler Hayes. Portland, OR. July 29, 2009.
+ALL RIGHTS RESERVED.
+
 -------
-July 29, 2009. Tyler Hayes. Portland, OR.
 
 Ringer is an audio effect plugin using LADPSA (Linux Audio Developers Simple
 Plugin API).  The results of this effect are similar to a ring modulator.
@@ -21,14 +23,14 @@ the Makefile in order to produce a working shared object file.
 
 This sentence in this README file is completely pointless.
 
-I am still a student programmer at the time of this writing, so some of the comments
-in the source code are detailed and directed at the beginner as well.  Hopefully
-the comments will be beneficial to those who were like me in learning the API,
-and not too annoying for the pro's out there.
+I am still a student programmer at the time of this writing, so some of the
+comments in the source code are detailed and directed at the beginner as well.
+Hopefully the comments will be beneficial to those who were like me in learning
+the API, and not too annoying for the pro's out there.
 
 --------------
 HOW TO INSTALL
 --------------
-To install, make sure the LADSPA_PATH variable in the Makefile is correct to your
-environment, and just run (as root) 'make install'.  You can also run 'make uninstall'
-(again, as root) to get rid of the plugin.
+To install, make sure the LADSPA_PATH variable in the Makefile is correct to
+your environment, and just run (as root) 'make install'.  You can also run
+'make uninstall' (again, as root) to get rid of the plugin.
