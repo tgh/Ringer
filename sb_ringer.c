@@ -73,7 +73,9 @@
 //-- STRUCT FOR PORT CONNECTION --
 //--------------------------------
 
-typedef struct {
+
+typedef struct
+{
     // the number of copies to be placed into the output buffer.
     // NOTE: the number has to be an integer between 5 and 200, but this
     // variable is a pointer to a LADSPA_Data (a float), because the connection
@@ -90,12 +92,14 @@ typedef struct {
 //-- FUNCTIONS --
 //---------------
 
+
 /*
  * Creates a plugin instance by allocating space for a plugin handle.
  * This function returns a LADSPA_Handle (which is a void * -- a pointer to
  * anything).
  */
-LADSPA_Handle instantiate_Ringer() {
+LADSPA_Handle instantiate_Ringer()
+{
     Ringer * ringer;
 
     // allocate space for an Ringer struct instance
@@ -107,13 +111,15 @@ LADSPA_Handle instantiate_Ringer() {
 
 //-----------------------------------------------------------------------------
 
+
 /*
  * Make a connection between a specified port and it's corresponding data
  * location. For example, the output port should be "connected" to the place in
  * memory where that sound data to be played is located.
  */
 void connect_port_to_Ringer(LADSPA_Handle instance, unsigned long Port,
-                            LADSPA_Data * data_location) {
+                            LADSPA_Data * data_location)
+{
     Ringer * ringer;
 
     // cast the (void *) instance to (Ringer *) and set it to local pointer
@@ -130,11 +136,13 @@ void connect_port_to_Ringer(LADSPA_Handle instance, unsigned long Port,
 
 //-----------------------------------------------------------------------------
 
+
 /*
  * Here is where the rubber hits the road.  The actual sound manipulation
  * is done in run().
  */
-void run_Ringer(LADSPA_Handle instance, unsigned long sample_count) {
+void run_Ringer(LADSPA_Handle instance, unsigned long sample_count)
+{
     Ringer * ringer = (Ringer *) instance;
 
     /*
@@ -142,12 +150,14 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count) {
      * if someone is developing a host program and it has some bugs in it, it
      * might pass some bad data.
      */
-    if (sample_count <= 1) {
+    if (sample_count <= 1)
+    {
         printf("\nEither 0 or 1 sample(s) were passed into the plugin.");
         printf("\nPlugin not executed.\n");
         return;
     }
-    if (!ringer) {
+    if (!ringer)
+    {
         printf("\nPlugin received NULL pointer for plugin instance.");
         printf("\nPlugin not executed.\n");
         return;
@@ -167,11 +177,12 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count) {
 
     // set the number of copies to be made using the defined macro
     const int SAMPLE_COPY_COUNT =
-                           LIMIT_BETWEEN_5_AND_200((int) *(ringer->copy_count));
+            LIMIT_BETWEEN_5_AND_200((int) *(ringer->copy_count));
 
     // go through the input buffer and make the necessary copies into the
     // output buffer
-    while (in_index < sample_count) {
+    while (in_index < sample_count)
+    {
         // make the first copy (there will always be at least 2 samples due to
         // the first condition of this function)
         output[out_index++] = input[in_index];
@@ -188,8 +199,9 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count) {
          * will never be greater than or equal to.
          */
         if (in_index >= sample_count - (SAMPLE_COPY_COUNT - 1)
-                || (sample_count - (SAMPLE_COPY_COUNT - 1))
-                    >= 0xFFFFFFFFFFFFFFFF - (SAMPLE_COPY_COUNT - 1)) {
+            || (sample_count - (SAMPLE_COPY_COUNT - 1))
+               >= 0xFFFFFFFFFFFFFFFF - (SAMPLE_COPY_COUNT - 1))
+        {
             while (out_index < sample_count)
                 output[out_index++] = input[in_index];
 
@@ -215,11 +227,13 @@ void run_Ringer(LADSPA_Handle instance, unsigned long sample_count) {
 
 //-----------------------------------------------------------------------------
 
+
 /*
  * Frees dynamic memory associated with the plugin instance.  The host
  * better send the right pointer in or there's gonna be a leak!
  */
-void cleanup_Ringer(LADSPA_Handle instance) {
+void cleanup_Ringer(LADSPA_Handle instance)
+{
     if (instance)
         free(instance);
 }
@@ -232,11 +246,13 @@ void cleanup_Ringer(LADSPA_Handle instance) {
  */
 LADSPA_Descriptor * Ringer_descriptor = NULL;
 
+
 /*
  * The _init() function is called whenever this plugin is first loaded
  * by the host using it (when the host program is first opened).
  */
-void _init() {
+void _init()
+{
     /*
      * allocate memory for Ringer_descriptor (it's just a pointer at this
      * point).
@@ -244,10 +260,11 @@ void _init() {
      * Ringer_descriptor will point to.
      */
     Ringer_descriptor = (LADSPA_Descriptor *)
-                        malloc(sizeof (LADSPA_Descriptor));
+            malloc(sizeof (LADSPA_Descriptor));
 
     // make sure malloc worked properly before initializing the struct fields
-    if (Ringer_descriptor) {
+    if (Ringer_descriptor)
+    {
         // assign the unique ID of the plugin given by Richard Furse
         Ringer_descriptor->UniqueID = UNIQUE_ID;
 
@@ -295,14 +312,14 @@ void _init() {
         // allocate space for the temporary array with a length of the number
         // of ports (PortCount)
         temp_descriptor_array = (LADSPA_PortDescriptor *)
-                            calloc(PORT_COUNT, sizeof (LADSPA_PortDescriptor));
+                calloc(PORT_COUNT, sizeof (LADSPA_PortDescriptor));
 
         /*
          * set the instance LADSPA_PortDescriptor array (PortDescriptors)
          * pointer to the location temp_descriptor_array is pointing at.
          */
         Ringer_descriptor->PortDescriptors = (const LADSPA_PortDescriptor *)
-                                             temp_descriptor_array;
+                temp_descriptor_array;
 
         /*
          * set the port properties by ORing specific bit masks defined in
@@ -314,14 +331,14 @@ void _init() {
          * the user).
          */
         temp_descriptor_array[RINGER_COPY_COUNT] = LADSPA_PORT_INPUT |
-                                                   LADSPA_PORT_CONTROL;
+                LADSPA_PORT_CONTROL;
 
         /*
          * this one gives the input port the properties that tell the host that
          * this port takes input and is an audio port (not a control port).
          */
         temp_descriptor_array[RINGER_INPUT] = LADSPA_PORT_INPUT |
-                                              LADSPA_PORT_AUDIO;
+                LADSPA_PORT_AUDIO;
 
         /*
          * this gives the output port the properties that tell the host that
@@ -330,7 +347,7 @@ void _init() {
          * audio port...).
          */
         temp_descriptor_array[RINGER_OUTPUT] = LADSPA_PORT_OUTPUT |
-                                               LADSPA_PORT_AUDIO;
+                LADSPA_PORT_AUDIO;
 
         /*
          * set temp_descriptor_array to NULL for housekeeping--we don't need
@@ -375,14 +392,14 @@ void _init() {
 
         // allocate space for two port hints (see ladspa.h for info on 'hints')
         temp_hints = (LADSPA_PortRangeHint *)
-                     calloc(PORT_COUNT, sizeof (LADSPA_PortRangeHint));
+                calloc(PORT_COUNT, sizeof (LADSPA_PortRangeHint));
 
         /*
          * set the instance PortRangeHints pointer to the location temp_hints
          * is pointed at.
          */
         Ringer_descriptor->PortRangeHints = (const LADSPA_PortRangeHint *)
-                                            temp_hints;
+                temp_hints;
 
         /*
          * set the port hint descriptors (which are ints).
@@ -424,13 +441,15 @@ void _init() {
 
 //-----------------------------------------------------------------------------
 
+
 /*
  * Returns a descriptor of this plugin.
  *
  * NOTE: this function MUST be called 'ladspa_descriptor' or else the plugin
  * will not be recognized.
  */
-const LADSPA_Descriptor * ladspa_descriptor(unsigned long index) {
+const LADSPA_Descriptor * ladspa_descriptor(unsigned long index)
+{
     if (index == 0)
         return Ringer_descriptor;
     else
@@ -439,13 +458,16 @@ const LADSPA_Descriptor * ladspa_descriptor(unsigned long index) {
 
 //-----------------------------------------------------------------------------
 
+
 /*
  * This is called automatically when the host quits (when this dynamic library
  * is unloaded).  It frees all dynamically allocated memory associated with
  * the descriptor.
  */
-void _fini() {
-    if (Ringer_descriptor) {
+void _fini()
+{
+    if (Ringer_descriptor)
+    {
         free((char *) Ringer_descriptor->Label);
         free((char *) Ringer_descriptor->Name);
         free((char *) Ringer_descriptor->Maker);
