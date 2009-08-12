@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ladspa.h"
+#include "../ladspa.h"
 
 #define LIMIT_BETWEEN_5_AND_500(x) (((x) < 5) ? 5 : (((x) > 500) ? 500 : (x)))
 
