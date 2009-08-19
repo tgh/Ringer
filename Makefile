@@ -30,7 +30,7 @@ PLUGINS	=	sb_ringer.so
 
 all: $(PLUGINS)
 
-sb_ringer.o: sb_ringer.c ../ladspa.h
+sb_ringer.o: sb_ringer.c
 	$(CC) $(CFLAGS) -c sb_ringer.c
 
 sb_ringer.so: sb_ringer.o
